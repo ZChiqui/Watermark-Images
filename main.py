@@ -66,7 +66,12 @@ def button_clicked():
             # Load image and normalize to RGBA to support alpha compositing
             img = Image.open(path).convert("RGBA")
             # Resize for a consistent preview size (does not persist original dimensions)
-            img = img.resize((800, 600), Image.LANCZOS)
+            orig_w, orig_h = img.size
+            new_w = int(800 * 0.7)
+            new_h = int(orig_h * (new_w / orig_w))
+            img = img.resize((new_w, new_h), Image.LANCZOS)
+            print(img.size)
+
         except Exception as e:
             messagebox.showerror("Error", f"Failed to open image:\n{e}")
             img = None
@@ -98,6 +103,7 @@ def add_watermark():
 
     # Composite watermark using its alpha channel as mask
     r, g, b, alpha = logo.split()
+    alpha = alpha.point(lambda p: p * 0.3)
     img.paste(logo, (x, y), mask=alpha)
 
     show_image(img)
